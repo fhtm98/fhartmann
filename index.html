@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Felix Hartmann – Automation Engineer & KI-Stratege. Vom Softwareingenieur zum Architekten unternehmensweiter KI-Transformation." />
+  <title>Felix Hartmann</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0f0f14;
+      --bg-card:  #17171f;
+      --bg-hover: #1e1e28;
+      --border:   rgba(255,255,255,0.09);
+      --text:     #c8c8d8;
+      --muted:    #7a7a94;
+      --accent:   #8b7ff5;
+      --accent-d: rgba(139,127,245,0.1);
+      --accent-b: rgba(139,127,245,0.22);
+      --white:    #eeeef5;
+      --fd: 'Space Grotesk', sans-serif;
+      --fm: 'JetBrains Mono', monospace;
+      --ease: cubic-bezier(0.4,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--fd); background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.1rem 2.5rem;
+      background: rgba(8,8,14,0.88); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: var(--fm); font-size: 0.8rem; color: var(--accent); letter-spacing: 0.1em; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-cta {
+      font-family: var(--fm); font-size: 0.75rem; color: var(--accent);
+      border: 1px solid var(--accent); padding: 0.4rem 1rem; border-radius: 3px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); color: var(--bg); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+      padding: 8rem 2.5rem 5rem; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -25%; right: -15%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(124,109,250,0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      font-family: var(--fm); font-size: 0.75rem; color: var(--accent);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;
+    }
+    .hero-tag::before { content: ''; display: block; width: 2rem; height: 1px; background: var(--accent); }
+    h1 {
+      font-size: clamp(3rem, 7.5vw, 6rem); font-weight: 700;
+      line-height: 1.02; letter-spacing: -0.03em; color: var(--white);
+      max-width: 16ch; margin-bottom: 1.25rem;
+    }
+    h1 em { font-style: normal; color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(1rem, 1.8vw, 1.15rem); color: var(--muted);
+      max-width: 50ch; line-height: 1.75; margin-bottom: 2.5rem;
+    }
+    .hero-sub strong { color: var(--text); font-weight: 500; }
+    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem; }
+    .btn-primary {
+      font-family: var(--fm); font-size: 0.8rem; font-weight: 500;
+      background: var(--accent); color: var(--bg);
+      padding: 0.75rem 1.75rem; border-radius: 3px;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary {
+      font-family: var(--fm); font-size: 0.8rem;
+      border: 1px solid var(--border); color: var(--muted);
+      padding: 0.75rem 1.75rem; border-radius: 3px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .hero-facts {
+      display: flex; gap: 3.5rem; flex-wrap: wrap;
+      border-top: 1px solid var(--border); padding-top: 2.5rem;
+    }
+    .fact { display: flex; flex-direction: column; gap: 0.25rem; }
+    .fact-n { font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1; }
+    .fact-n span { color: var(--accent); }
+    .fact-l { font-family: var(--fm); font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    /* SECTION */
+    section { padding: 6rem 2.5rem; border-top: 1px solid var(--border); }
+    .s-label { font-family: var(--fm); font-size: 0.7rem; color: var(--accent); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.6rem; }
+    .s-title { font-size: clamp(1.9rem, 4vw, 3.2rem); font-weight: 700; color: var(--white); line-height: 1.08; letter-spacing: -0.025em; max-width: 24ch; margin-bottom: 3rem; }
+
+    /* ABOUT / NARRATIVE */
+    .about-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 5rem; align-items: start; }
+    .about-text p { font-size: 1rem; color: var(--muted); line-height: 1.85; margin-bottom: 1.25rem; }
+    .about-text p strong { color: var(--text); font-weight: 500; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-aside { display: flex; flex-direction: column; gap: 1rem; }
+    .aside-block {
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px;
+    }
+    .aside-block-label { font-family: var(--fm); font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+    .aside-block-val { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+    .aside-block-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 1.5rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0; top: 0.6rem; bottom: 0;
+      width: 1px; background: var(--border);
+    }
+    .tl-item { position: relative; padding-left: 2rem; padding-bottom: 3rem; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot {
+      position: absolute; left: -0.45rem; top: 0.55rem;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--bg); border: 2px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .tl-item.current .tl-dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 10px var(--accent-b); }
+    .tl-period { font-family: var(--fm); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 0.35rem; }
+    .tl-company { font-size: 0.8rem; color: var(--accent); font-weight: 500; margin-bottom: 0.2rem; }
+    .tl-role { font-size: 1.05rem; font-weight: 600; color: var(--white); margin-bottom: 0.65rem; letter-spacing: -0.01em; }
+    .tl-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.75; margin-bottom: 1rem; }
+    .tl-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      font-family: var(--fm); font-size: 0.65rem; color: var(--accent);
+      background: var(--accent-d); border: 1px solid rgba(124,109,250,0.2);
+      padding: 0.2rem 0.55rem; border-radius: 2px; letter-spacing: 0.04em;
+    }
+    .tag.neutral { color: var(--muted); background: transparent; border-color: var(--border); }
+
+    /* SKILLS */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2rem; }
+    .skill-group-title {
+      font-family: var(--fm); font-size: 0.68rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem;
+    }
+    .skill-rows { display: flex; flex-direction: column; gap: 0.7rem; }
+    .skill-row { display: flex; justify-content: space-between; align-items: center; }
+    .skill-name { font-size: 0.88rem; color: var(--text); }
+    .skill-bar-bg { width: 100px; height: 2px; background: var(--border); border-radius: 1px; }
+    .skill-bar { height: 2px; border-radius: 1px; background: var(--accent); width: 0; transition: width 1.1s var(--ease); }
+
+    /* WHAT I BUILD */
+    .build-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .build-card {
+      background: var(--bg-card); padding: 2.25rem;
+      position: relative; overflow: hidden;
+      transition: background 0.2s;
+    }
+    .build-card:hover { background: var(--bg-hover); }
+    .build-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--accent); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s var(--ease);
+    }
+    .build-card:hover::after { transform: scaleX(1); }
+    .build-num { font-family: var(--fm); font-size: 0.65rem; color: var(--muted); margin-bottom: 1rem; }
+    .build-title { font-size: 0.82rem; font-weight: 600; color: var(--white); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.65rem; }
+    .build-body { font-size: 0.87rem; color: var(--muted); line-height: 1.72; }
+
+    /* PHILOSOPHY */
+    .phil-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .phil-card {
+      padding: 2rem 2.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      border-top: 2px solid var(--accent);
+      transition: background 0.2s;
+    }
+    .phil-card:hover { background: var(--bg-hover); }
+    .phil-card-num {
+      font-family: var(--fm); font-size: 0.65rem;
+      color: var(--accent); letter-spacing: 0.12em;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .phil-card-text {
+      font-size: 0.97rem; color: var(--text);
+      line-height: 1.82; font-weight: 400;
+    }
+    .phil-card-text strong { color: var(--white); font-weight: 600; }
+
+    /* CONTACT */
+    .contact-wrap { text-align: center; padding: 7rem 2.5rem; position: relative; overflow: hidden; }
+    .contact-wrap::before {
+      content: ''; position: absolute; bottom: -20%; left: 50%; transform: translateX(-50%);
+      width: 50vw; height: 50vw;
+      background: radial-gradient(circle, rgba(124,109,250,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .contact-h { font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 700; color: var(--white); letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+    .contact-sub { font-size: 1rem; color: var(--muted); max-width: 42ch; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .contact-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .cl { font-family: var(--fm); font-size: 0.8rem; padding: 0.75rem 1.75rem; border-radius: 3px; transition: all 0.2s; }
+    .cl.p { background: var(--accent); color: var(--bg); font-weight: 500; }
+    .cl.p:hover { opacity: 0.85; }
+    .cl.s { border: 1px solid var(--border); color: var(--muted); }
+    .cl.s:hover { border-color: var(--accent); color: var(--accent); }
+
+    footer { padding: 1.5rem 2.5rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+    .fc { font-family: var(--fm); font-size: 0.68rem; color: var(--muted); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s var(--ease), transform 0.55s var(--ease); }
+    .reveal.v { opacity: 1; transform: none; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { display: none; }
+      .hero, section { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-facts { gap: 2rem; }
+      .contact-wrap { padding: 5rem 1.25rem; }
+      footer { flex-direction: column; gap: 0.5rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">felix hartmann</span>
+  <ul class="nav-links">
+    <li><a href="#about">Über mich</a></li>
+    <li><a href="#experience">Erfahrung</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#philosophy">Denkweise</a></li>
+  </ul>
+  <a href="https://www.linkedin.com/in/felix-htm/" target="_blank" rel="noopener" class="nav-cta">LinkedIn</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <p class="hero-tag">Automation Engineer &amp; KI-Stratege</p>
+  <h1>Ich baue Dinge,<br>die <em>denken.</em></h1>
+  <p class="hero-sub">
+    Vom Vermessungstechniker zum Softwareingenieur, vom PM zum KI-Architekten –
+    <strong>mein Weg war nie geplant, aber immer konsequent.</strong>
+    Heute transformiere ich Unternehmen mit KI und Automation, weil ich beide Welten kenne:
+    den Code dahinter und die Menschen davor.
+  </p>
+  <div class="hero-ctas">
+    <a href="https://www.linkedin.com/in/felix-htm/" target="_blank" rel="noopener" class="btn-primary">LinkedIn</a>
+  </div>
+  <div class="hero-facts">
+    <div class="fact"><span class="fact-n">10<span>+</span></span><span class="fact-l">Jahre Berufserfahrung</span></div>
+    <div class="fact"><span class="fact-n">4<span>+</span></span><span class="fact-l">Jahre als Projektmanager</span></div>
+    <div class="fact"><span class="fact-n">2</span><span class="fact-l">Unternehmen KI-transformiert</span></div>
+    <div class="fact"><span class="fact-n">B2B<span>+</span></span><span class="fact-l">Enterprise &amp; KMU</span></div>
+  </div>
+</header>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="s-label reveal">// Über mich</p>
+  <h2 class="s-title reveal">Nicht der typische<br>KI-Evangelist.</h2>
+  <div class="about-grid reveal">
+    <div class="about-text">
+      <p>
+        Vier Jahre als <strong>Softwareingenieur bei ERP-Active</strong> –
+        .NET, MSSQL, Softwarearchitektur, Web, Desktop, Mobile. Ich weiß, wie ein Backend aussieht,
+        das fünf Jahre lang halten muss. Ich weiß auch, wie eines aussieht, das das nicht tut.
+      </p>
+      <p>
+        Dann wurde aus dem Entwickler ein <strong>Projektmanager in denselben Projekten</strong>.
+        Kein Zufall – wer gebaut hat, versteht Scope, Risiken und Zeitpläne ohne Übersetzungsschicht.
+        In dieser Phase habe ich begonnen, <strong>KI in Kundenprojekte zu integrieren</strong>:
+        nicht als Feature-Spielerei, sondern als konkreten Hebel für Automatisierung und Effizienz.
+      </p>
+      <p>
+        Parallel dazu: <strong>Startup-Mitarbeit als CTO</strong>, IHK-Prüfungsausschuss,
+        eigene Projekte. Nicht alles davon war erfolgreich –
+        aber gescheiterte Projekte lehren mehr als erfolgreiche.
+      </p>
+      <p>
+        Seit 2025 bei <strong>softfair</strong>: als Automation Engineer gestartet,
+        heute faktisch verantwortlich für alle operativen KI-Themen im Unternehmen.
+        Infrastruktur aufgebaut, Agenten deployed, Teams enablet –
+        und parallel bei der Schwestergesellschaft DEMV dasselbe nochmal.
+        <strong>AI First ist kein Slidedeck. Es ist eine Infrastrukturentscheidung.</strong>
+      </p>
+    </div>
+    <div class="about-aside">
+      <div class="aside-block">
+        <p class="aside-block-label">Aktuell</p>
+        <p class="aside-block-val">Automation Engineer</p>
+        <p class="aside-block-sub">softfair GmbH · Vollzeit · Remote</p>
+      </div>
+      <div class="aside-block">
+        <p class="aside-block-label">Standort</p>
+        <p class="aside-block-val">Rheine, NRW</p>
+        <p class="aside-block-sub">Deutschland</p>
+      </div>
+      <div class="aside-block">
+        <p class="aside-block-label">Sprachen</p>
+        <p class="aside-block-val">Deutsch · Englisch</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <p class="s-label reveal">// Erfahrung</p>
+  <h2 class="s-title reveal">Eine Karriere,<br>keine Stellensammlung.</h2>
+  <div class="timeline reveal">
+
+    <div class="tl-item current">
+      <div class="tl-dot"></div>
+      <p class="tl-period">Sept. 2025 – Heute · 10 Monate</p>
+      <p class="tl-company">softfair GmbH / DEMV</p>
+      <h3 class="tl-role">Automation Engineer → KI-Teamlead</h3>
+      <p class="tl-desc">
+        Als Automation Engineer gestartet – und innerhalb von Monaten organisch zur
+        faktischen Führungsverantwortung für alle operativen KI-Themen gewachsen.
+        Aufbau der kompletten KI-Enablement-Infrastruktur (Langdock, n8n) als Basis
+        der unternehmensweiten "AI First"-Strategie. Bei der Schwestergesellschaft DEMV:
+        Entwicklung eines <strong>KI-Agenten als eigenständiges Produkt mit LangGraph</strong> –
+        von der Architektur bis zum Deployment. Außerdem Launch eines internen Produkts
+        mit Schnittstellen zu POs, Big Data und Head of Product.
+      </p>
+      <div class="tl-tags">
+        <span class="tag">n8n</span>
+        <span class="tag">Langdock</span>
+        <span class="tag">LangGraph</span>
+        <span class="tag">KI-Agenten</span>
+        <span class="tag">Anthropic API</span>
+        <span class="tag">Python</span>
+        <span class="tag">REST APIs</span>
+        <span class="tag">Strategieentwicklung</span>
+        <span class="tag">Team Leadership</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <p class="tl-period">Apr. 2025 – Aug. 2025 · 5 Monate</p>
+      <p class="tl-company">WaveAccess</p>
+      <h3 class="tl-role">IT Consultant / Project Manager</h3>
+      <p class="tl-desc">
+        Kundenberatung und Projektmanagement im Bereich KI, Automatisierung und
+        Softwareentwicklung für digitale Produkte. Account- und Partnermanagement,
+        Anforderungsanalyse, Brücke zwischen Business und Engineering.
+      </p>
+      <div class="tl-tags">
+        <span class="tag">Consulting</span>
+        <span class="tag">Anforderungsmanagement</span>
+        <span class="tag">Account Management</span>
+        <span class="tag neutral">Rheine · Vor Ort</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <p class="tl-period">2024 – 2025 · Nebenprojekt</p>
+      <p class="tl-company">PitSnap · Startup</p>
+      <h3 class="tl-role">CTO & Mitgründer</h3>
+      <p class="tl-desc">
+        Web3 Pay-per-Content Plattform für Künstler und Creator – mit eigenem Token ($PITS),
+        AI-Agenten, NFT-Marketplace und Live-Streaming. Ich war für die technische Architektur
+        verantwortlich: Blockchain-Integration (BEP20/BSC), KI-Features, App-Struktur und
+        Smart Contracts. Mediale Präsenz bei CryptoNews, NewsbtC, Bitcoinist u.a.,
+        15k+ Community, IHK-Prüfungsausschuss-Mitglied.
+        Das Projekt ist gescheitert – aber der technische und unternehmerische Scope war real.
+      </p>
+      <div class="tl-tags">
+        <span class="tag">Web3 / Blockchain</span>
+        <span class="tag">Smart Contracts</span>
+        <span class="tag">KI-Architektur</span>
+        <span class="tag">Tokenomics</span>
+        <span class="tag">CTO</span>
+        <span class="tag neutral">gescheitert · gelernt</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <p class="tl-period">Aug. 2021 – März 2025 · 3 Jahre 8 Monate</p>
+      <p class="tl-company">ERP-Active GmbH</p>
+      <h3 class="tl-role">Projektmanager</h3>
+      <p class="tl-desc">
+        Projektsteuerung und Kundenberatung für Softwareprojekte im B2B/Enterprise-Bereich.
+        Digitale Produkte von der Anforderung bis zum Go-live – und zunehmend
+        KI-Integration in Kundenprojekte: Automatisierung, Prozessoptimierung, smarte Features.
+        Weil ich vorher selbst gebaut hatte, konnte ich Scope, Risiken und Zeitpläne
+        realistisch beurteilen – kein Raten, kein Puffer-Poker.
+      </p>
+      <div class="tl-tags">
+        <span class="tag">Projektsteuerung</span>
+        <span class="tag">KI-Integration</span>
+        <span class="tag">Prozessoptimierung</span>
+        <span class="tag">Kundenberatung</span>
+        <span class="tag">Softwarearchitektur</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <p class="tl-period">ca. 2022 – 2025 · Ehrenamt</p>
+      <p class="tl-company">IHK Hannover</p>
+      <h3 class="tl-role">Mitglied des Prüfungsausschusses</h3>
+      <p class="tl-desc">
+        Prüfer und Ausbilder im Bereich Fachinformatik – Nachwuchs begleitet,
+        bewertet und weiterentwickelt. Wer selbst gebaut und Projekte geleitet hat,
+        weiß was in der Praxis zählt und kann das direkt weitergeben.
+        Ein Ehrenamt, das zeigt: Fachkompetenz endet nicht am eigenen Schreibtisch.
+      </p>
+      <div class="tl-tags">
+        <span class="tag neutral">Ausbildung</span>
+        <span class="tag neutral">Prüfungswesen</span>
+        <span class="tag neutral">Fachinformatik</span>
+        <span class="tag neutral">IHK Hannover · Ehrenamt</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <p class="tl-period">aktuell · Ehrenamt</p>
+      <p class="tl-company">THW – Technisches Hilfswerk</p>
+      <h3 class="tl-role">Aktives Mitglied</h3>
+      <p class="tl-desc">
+        Einsatzorganisation unter realen Bedingungen – wo Planung, Koordination
+        und Belastbarkeit keine abstrakten Begriffe sind. Wer im THW unter Druck
+        handlungsfähig bleibt, bringt das auch in Projekten mit. Ein Ausgleich,
+        der mehr formt als er entspannt.
+      </p>
+      <div class="tl-tags">
+        <span class="tag neutral">Krisenmanagement</span>
+        <span class="tag neutral">Teamarbeit</span>
+        <span class="tag neutral">Rheine · Ehrenamt</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <p class="tl-period">Aug. 2017 – Aug. 2021 · 4 Jahre 1 Monat</p>
+      <p class="tl-company">ERP-Active GmbH</p>
+      <h3 class="tl-role">Softwareingenieur</h3>
+      <p class="tl-desc">
+        Das Fundament. Vier Jahre in der Tiefe: Softwarearchitektur, Web-Engineering,
+        Desktop-Anwendungen, mobile Apps, Schnittstellen. .NET Core, .NET Framework,
+        MSSQL, Flutter. B2B und B2C. Von KMU bis Konzern.
+        Ich kenne den Unterschied zwischen Code, der funktioniert,
+        und Code, der wartbar ist.
+      </p>
+      <div class="tl-tags">
+        <span class="tag">.NET Core</span>
+        <span class="tag">.NET Framework</span>
+        <span class="tag">MSSQL</span>
+        <span class="tag">Flutter</span>
+        <span class="tag">Softwarearchitektur</span>
+        <span class="tag">Web-Engineering</span>
+        <span class="tag neutral">Hannover · Vor Ort</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <p class="tl-period">Aug. 2014 – Aug. 2017 · 3 Jahre 1 Monat</p>
+      <p class="tl-company">RMK</p>
+      <h3 class="tl-role">Vermessungstechniker</h3>
+      <p class="tl-desc">
+        Der Anfang – und ein gutes Fundament. Geodaten, Präzision, Feldeinsatz.
+        Hat den Blick für Genauigkeit und strukturiertes Denken geschärft,
+        bevor der Wechsel in die Softwareentwicklung kam.
+      </p>
+      <div class="tl-tags">
+        <span class="tag neutral">GIS</span>
+        <span class="tag neutral">Geodaten</span>
+        <span class="tag neutral">Celle · Vor Ort</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="s-label reveal">// Stack</p>
+  <h2 class="s-title reveal">Tools, die ich<br>wirklich einsetze.</h2>
+  <div class="skills-grid reveal">
+    <div>
+      <p class="skill-group-title">KI & Automation</p>
+      <div class="skill-rows">
+        <div class="skill-row"><span class="skill-name">n8n</span><div class="skill-bar-bg"><div class="skill-bar" data-w="96"></div></div></div>
+        <div class="skill-row"><span class="skill-name">LangGraph</span><div class="skill-bar-bg"><div class="skill-bar" data-w="82"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Langdock</span><div class="skill-bar-bg"><div class="skill-bar" data-w="91"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Anthropic / Claude API</span><div class="skill-bar-bg"><div class="skill-bar" data-w="94"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Prompt Engineering</span><div class="skill-bar-bg"><div class="skill-bar" data-w="93"></div></div></div>
+        <div class="skill-row"><span class="skill-name">KI-Agentenarchitektur</span><div class="skill-bar-bg"><div class="skill-bar" data-w="87"></div></div></div>
+      </div>
+    </div>
+    <div>
+      <p class="skill-group-title">Softwareentwicklung</p>
+      <div class="skill-rows">
+        <div class="skill-row"><span class="skill-name">Python</span><div class="skill-bar-bg"><div class="skill-bar" data-w="86"></div></div></div>
+        <div class="skill-row"><span class="skill-name">.NET Core / Framework</span><div class="skill-bar-bg"><div class="skill-bar" data-w="82"></div></div></div>
+        <div class="skill-row"><span class="skill-name">REST APIs</span><div class="skill-bar-bg"><div class="skill-bar" data-w="91"></div></div></div>
+        <div class="skill-row"><span class="skill-name">MS SQL Server</span><div class="skill-bar-bg"><div class="skill-bar" data-w="79"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Flutter</span><div class="skill-bar-bg"><div class="skill-bar" data-w="74"></div></div></div>
+        <div class="skill-row"><span class="skill-name">JavaScript / Node.js</span><div class="skill-bar-bg"><div class="skill-bar" data-w="76"></div></div></div>
+      </div>
+    </div>
+    <div>
+      <p class="skill-group-title">Infrastruktur & Deployment</p>
+      <div class="skill-rows">
+        <div class="skill-row"><span class="skill-name">AWS</span><div class="skill-bar-bg"><div class="skill-bar" data-w="81"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Docker</span><div class="skill-bar-bg"><div class="skill-bar" data-w="84"></div></div></div>
+        <div class="skill-row"><span class="skill-name">CI/CD & Deployment</span><div class="skill-bar-bg"><div class="skill-bar" data-w="78"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Git / GitHub</span><div class="skill-bar-bg"><div class="skill-bar" data-w="88"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Linux / Bash</span><div class="skill-bar-bg"><div class="skill-bar" data-w="80"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Notion</span><div class="skill-bar-bg"><div class="skill-bar" data-w="95"></div></div></div>
+      </div>
+    </div>
+    <div>
+      <p class="skill-group-title">Data Engineering & KPIs</p>
+      <div class="skill-rows">
+        <div class="skill-row"><span class="skill-name">Datenmodellierung</span><div class="skill-bar-bg"><div class="skill-bar" data-w="80"></div></div></div>
+        <div class="skill-row"><span class="skill-name">KPI-Frameworks</span><div class="skill-bar-bg"><div class="skill-bar" data-w="84"></div></div></div>
+        <div class="skill-row"><span class="skill-name">ETL / Datenpipelines</span><div class="skill-bar-bg"><div class="skill-bar" data-w="77"></div></div></div>
+        <div class="skill-row"><span class="skill-name">MS SQL Server</span><div class="skill-bar-bg"><div class="skill-bar" data-w="79"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Reporting & Analytics</span><div class="skill-bar-bg"><div class="skill-bar" data-w="82"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Messbarkeit von KI-Output</span><div class="skill-bar-bg"><div class="skill-bar" data-w="86"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT I BUILD -->
+<section>
+  <p class="s-label reveal">// Was ich tue</p>
+  <h2 class="s-title reveal">Konkret, nicht abstrakt.</h2>
+  <div class="build-grid reveal">
+    <div class="build-card">
+      <p class="build-num">01</p>
+      <p class="build-title">KI-Infrastruktur aufbauen</p>
+      <p class="build-body">Nicht "KI einführen" – KI-Infrastruktur bauen, die skaliert. Langdock als unternehmensweite Plattform, n8n als Automations-Backbone, Agenten mit echtem Tool-Use. So dass Teams unabhängig arbeiten können.</p>
+    </div>
+    <div class="build-card">
+      <p class="build-num">02</p>
+      <p class="build-title">Prozesse automatisieren</p>
+      <p class="build-body">Workflows, die sich selbst erledigen. Datenflüsse, die kein manuelles Zutun mehr brauchen. Von simplen Triggerlogiken bis zu komplexen Multi-Step-Agenten mit Fehlerhandling und Monitoring.</p>
+    </div>
+    <div class="build-card">
+      <p class="build-num">03</p>
+      <p class="build-title">Teams enablen</p>
+      <p class="build-body">KI ist nur so gut wie die Menschen, die sie nutzen. Ich baue Enablement-Programme, schreibe System-Prompts, die funktionieren, und erkläre komplexe Konzepte so, dass sie hängenbleiben.</p>
+    </div>
+    <div class="build-card">
+      <p class="build-num">04</p>
+      <p class="build-title">Software entwickeln</p>
+      <p class="build-body">Wenn's schnell gehen muss und kein Dev-Team verfügbar ist: ich kann selbst bauen. Prototypen, interne Tools, Schnittstellen. Mit dem nötigen Qualitätsbewusstsein, damit es danach nicht sofort wieder kaputt geht.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <p class="s-label reveal">// Denkweise</p>
+  <h2 class="s-title reveal">Was ich glaube.</h2>
+  <div class="phil-grid reveal">
+    <div class="phil-card">
+      <p class="phil-card-num">01 · Problem first</p>
+      <p class="phil-card-text">
+        <strong>KI-Transformation scheitert selten an der Technologie.</strong>
+        Sie scheitert daran, dass die eigentliche Frage nie gestellt wurde:
+        Was genau soll sich danach anders anfühlen – für wen, und warum?
+        Ich fange dort an, bevor ich irgendetwas baue.
+      </p>
+    </div>
+    <div class="phil-card">
+      <p class="phil-card-num">02 · Systeme, nicht Schritte</p>
+      <p class="phil-card-text">
+        Der Unterschied zwischen einem Automation Engineer und jemandem,
+        der Workflows zusammenklickt: <strong>Ich denke in Systemen.</strong>
+        Was passiert, wenn der API-Call fehlschlägt? Wer merkt es?
+        Wie erholt sich der Prozess? Robustheit ist kein Bonus – sie ist das Produkt.
+      </p>
+    </div>
+    <div class="phil-card">
+      <p class="phil-card-num">03 · Strategie braucht Handwerk</p>
+      <p class="phil-card-text">
+        <strong>Strategie ohne Umsetzungskompetenz ist PowerPoint.</strong>
+        Ich sitze an beiden Enden des Tisches und weiß, was jeweils auf der
+        anderen Seite gedacht wird. Das macht den Unterschied zwischen einem
+        Plan, der funktioniert, und einem, der gut klingt.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-wrap">
+  <h2 class="contact-h reveal">Reden wir.</h2>
+  <p class="contact-sub reveal">KI-Strategie, Automatisierungsproblem, oder einfach fachlicher Austausch – ich bin offen für beides.</p>
+  <div class="contact-links reveal">
+    <a href="https://www.linkedin.com/in/felix-htm/" target="_blank" rel="noopener" class="cl p">LinkedIn</a>
+  </div>
+</section>
+
+<footer>
+  <span class="fc">© 2026 Felix Hartmann</span>
+  <span class="fc">Built with HTML · Hosted on GitHub Pages</span>
+</footer>
+
+<script>
+  // SCROLL REVEAL
+  const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); }), { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // SKILL BARS
+  const bObs = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.skill-bar').forEach(b => { b.style.width = b.dataset.w + '%'; });
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.skills-grid').forEach(s => bObs.observe(s));
+</script>
+</body>
+</html>
