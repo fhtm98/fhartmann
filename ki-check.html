@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>KI-Readiness Check · Felix Hartmann</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #040d08;
+      --bg-card:  #080f0b;
+      --bg-hover: #0d1a10;
+      --border:   rgba(255,255,255,0.07);
+      --text:     #c4d4cc;
+      --muted:    #687872;
+      --accent:   #10b981;
+      --accent-d: rgba(16,185,129,0.08);
+      --accent-b: rgba(16,185,129,0.25);
+      --white:    #edfaf5;
+      --fd: 'Space Grotesk', sans-serif;
+      --fm: 'JetBrains Mono', monospace;
+      --ease: cubic-bezier(0.4,0,0.2,1);
+      --ease-out: cubic-bezier(0,0,0.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { overflow: hidden; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.25); border-radius: 2px; }
+
+    body { font-family: var(--fd); background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── HEADER ───────────────────────────────────────────────── */
+    .s-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      background: rgba(4,13,8,0.96); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .s-logo { font-family: var(--fm); font-size: 0.78rem; color: var(--accent); letter-spacing: 0.1em; }
+    .s-counter { font-family: var(--fm); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; min-width: 48px; text-align: right; }
+
+    /* ── PROGRESS ─────────────────────────────────────────────── */
+    .s-progress {
+      position: fixed; top: 56px; left: 0; right: 0; z-index: 199;
+      height: 2px; background: var(--border);
+    }
+    .s-progress-fill {
+      height: 100%; width: 0;
+      background: linear-gradient(90deg, #059669, var(--accent), #34d399);
+      box-shadow: 0 0 10px rgba(16,185,129,0.5);
+      transition: width 0.5s var(--ease);
+    }
+
+    /* ── TRACK ────────────────────────────────────────────────── */
+    .s-outer {
+      position: fixed; top: 58px; left: 0; right: 0; bottom: 72px;
+      overflow: hidden;
+    }
+    .s-track {
+      display: flex; height: 100%;
+      transition: transform 0.45s var(--ease);
+      will-change: transform;
+    }
+
+    /* ── STEP BASE ────────────────────────────────────────────── */
+    .step {
+      width: 100vw; flex-shrink: 0; height: 100%;
+      overflow-y: auto; overflow-x: hidden;
+      padding: 2.5rem 2rem 2rem;
+      display: flex; flex-direction: column;
+    }
+    .step-inner {
+      max-width: 700px; margin: 0 auto; width: 100%;
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .step-label {
+      font-family: var(--fm); font-size: 0.68rem; color: var(--accent);
+      letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.75rem;
+    }
+    .step-q {
+      font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: 700;
+      color: var(--white); line-height: 1.1; letter-spacing: -0.025em;
+      margin-bottom: 0.5rem;
+    }
+    .step-hint {
+      font-size: 0.88rem; color: var(--muted); margin-bottom: 1.75rem; line-height: 1.6;
+    }
+    .step-q2 {
+      font-size: 1.05rem; font-weight: 600; color: var(--white);
+      margin-bottom: 1rem; margin-top: 0;
+    }
+    .step-divider {
+      border: none; border-top: 1px solid var(--border);
+      margin: 1.75rem 0;
+    }
+
+    /* ── CARDS ────────────────────────────────────────────────── */
+    .cards { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .cards.single { grid-template-columns: 1fr; max-width: 560px; }
+    .cards.duo   { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+
+    .card {
+      padding: 0.9rem 1.1rem;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
+      cursor: pointer; user-select: none; -webkit-user-select: none;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+      position: relative; overflow: hidden;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(16,185,129,0.06), transparent);
+      opacity: 0; transition: opacity 0.25s; pointer-events: none;
+    }
+    .card:hover { border-color: rgba(16,185,129,0.3); transform: translateY(-1px); }
+    .card:hover::before { opacity: 1; }
+    .card.selected {
+      border-color: var(--accent);
+      background: rgba(16,185,129,0.06);
+      box-shadow: 0 0 0 1px rgba(16,185,129,0.15), 0 4px 20px rgba(16,185,129,0.08);
+    }
+    .card.selected::before { opacity: 1; }
+
+    .card-key {
+      font-family: var(--fm); font-size: 0.6rem; color: var(--muted);
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 3px; width: 20px; height: 20px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px; transition: color 0.2s, border-color 0.2s;
+    }
+    .card.selected .card-key { color: var(--accent); border-color: rgba(16,185,129,0.4); }
+
+    .card-body { flex: 1; }
+    .card-title { font-size: 0.9rem; font-weight: 500; color: var(--white); line-height: 1.3; }
+    .card-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.4; }
+
+    .card-check {
+      position: absolute; top: 0.8rem; right: 0.9rem;
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 1.5px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .card.selected .card-check { background: var(--accent); border-color: var(--accent); }
+    .card-check::after {
+      content: ''; width: 4px; height: 7px;
+      border: 2px solid var(--bg); border-top: none; border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .card.selected .card-check::after { opacity: 1; }
+
+    /* ── INPUTS ───────────────────────────────────────────────── */
+    .input-group { display: flex; flex-direction: column; gap: 1.1rem; max-width: 500px; }
+    .input-wrap  { display: flex; flex-direction: column; gap: 0.35rem; }
+    .input-label {
+      font-family: var(--fm); font-size: 0.65rem; color: var(--accent);
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .input-optional { color: var(--muted); font-weight: 400; }
+    .input-field {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px;
+      padding: 0.7rem 0.9rem; font-family: var(--fd); font-size: 0.95rem; color: var(--white);
+      outline: none; width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-field::placeholder { color: var(--muted); }
+    .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(16,185,129,0.08); }
+
+    /* ── FOOTER NAV ───────────────────────────────────────────── */
+    .s-footer {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      height: 72px; padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(4,13,8,0.96); backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+    }
+    .btn-back {
+      font-family: var(--fm); font-size: 0.75rem; color: var(--muted);
+      background: none; border: 1px solid var(--border);
+      padding: 0.55rem 1.1rem; border-radius: 4px; cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, opacity 0.2s;
+    }
+    .btn-back:hover:not(:disabled) { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-back:disabled { opacity: 0; pointer-events: none; }
+    .btn-next {
+      font-family: var(--fm); font-size: 0.78rem; font-weight: 500;
+      color: var(--bg); background: var(--accent);
+      border: none; padding: 0.65rem 1.6rem; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; gap: 0.5rem;
+      transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
+    }
+    .btn-next:hover:not(:disabled) { box-shadow: 0 0 24px rgba(16,185,129,0.4); transform: translateY(-1px); }
+    .btn-next:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── INTRO STEP ───────────────────────────────────────────── */
+    .step-intro {
+      justify-content: center; align-items: center;
+      text-align: center; position: relative;
+    }
+    .step-intro::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(16,185,129,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16,185,129,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at center, black 10%, transparent 72%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 10%, transparent 72%);
+    }
+    .intro-inner { max-width: 580px; padding: 2rem; position: relative; z-index: 1; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .intro-inner > * { animation: fadeUp 0.65s var(--ease-out) both; }
+    .intro-inner > *:nth-child(1) { animation-delay: 0.05s; }
+    .intro-inner > *:nth-child(2) { animation-delay: 0.15s; }
+    .intro-inner > *:nth-child(3) { animation-delay: 0.25s; }
+    .intro-inner > *:nth-child(4) { animation-delay: 0.36s; }
+    .intro-inner > *:nth-child(5) { animation-delay: 0.45s; }
+
+    .intro-tag {
+      font-family: var(--fm); font-size: 0.7rem; color: var(--accent);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+    .intro-tag::before, .intro-tag::after {
+      content: ''; display: block; width: 1.5rem; height: 1px; background: var(--accent);
+    }
+    .intro-h {
+      font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700;
+      color: var(--white); line-height: 1.06; letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+    .intro-h em { font-style: normal; color: var(--accent); }
+    .intro-sub {
+      font-size: 0.97rem; color: var(--muted); line-height: 1.78;
+      max-width: 44ch; margin: 0 auto 2rem;
+    }
+    .intro-sub strong { color: var(--text); font-weight: 500; }
+    .intro-meta {
+      display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 2.25rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .intro-meta-item { font-family: var(--fm); font-size: 0.68rem; color: var(--muted); }
+    .intro-meta-item b { color: var(--accent); font-weight: 500; }
+    .btn-start {
+      font-family: var(--fm); font-size: 0.82rem; font-weight: 500;
+      color: var(--bg); background: var(--accent);
+      border: none; padding: 0.8rem 2.25rem; border-radius: 4px; cursor: pointer;
+      transition: box-shadow 0.25s, transform 0.2s;
+      display: inline-flex; align-items: center; gap: 0.55rem;
+    }
+    .btn-start:hover { box-shadow: 0 0 30px rgba(16,185,129,0.45); transform: translateY(-2px); }
+
+    /* ── RESULT STEP ──────────────────────────────────────────── */
+    .step-result { padding: 2.5rem 2rem 3rem; }
+    .result-inner { max-width: 680px; margin: 0 auto; width: 100%; }
+
+    .result-score {
+      background: var(--bg-card); border: 1px solid rgba(16,185,129,0.22);
+      border-left: 3px solid var(--accent); border-radius: 6px;
+      padding: 1.4rem 1.6rem; margin-bottom: 1.75rem;
+    }
+    .result-score-lbl { font-family: var(--fm); font-size: 0.62rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+    .result-score-title { font-size: 1.3rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+    .result-score-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.72; }
+
+    .result-findings { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 2rem; }
+    .result-finding {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.9rem 1.1rem;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px;
+      transition: border-color 0.2s;
+    }
+    .result-finding:hover { border-color: rgba(16,185,129,0.2); }
+    .result-finding-dot { color: var(--accent); font-family: var(--fm); font-size: 0.75rem; flex-shrink: 0; margin-top: 2px; }
+    .result-finding-text { font-size: 0.88rem; color: var(--text); line-height: 1.68; }
+
+    .result-cta {
+      text-align: center; padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .result-cta-h { font-size: 1.25rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+    .result-cta-sub { font-size: 0.88rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .result-cta-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .btn-cta {
+      font-family: var(--fm); font-size: 0.78rem; font-weight: 500;
+      padding: 0.7rem 1.6rem; border-radius: 4px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .btn-cta.primary { background: var(--accent); color: var(--bg); border: none; }
+    .btn-cta.primary:hover { box-shadow: 0 0 26px rgba(16,185,129,0.45); transform: translateY(-2px); }
+    .btn-cta.secondary { background: none; border: 1px solid var(--border); color: var(--muted); }
+    .btn-cta.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .s-header { padding: 0 1.25rem; }
+      .s-footer  { padding: 0 1.25rem; }
+      .step      { padding: 2rem 1.25rem 1.5rem; }
+      .intro-inner { padding: 1.5rem 1.25rem; }
+      .cards     { grid-template-columns: 1fr; }
+      .cards.duo { grid-template-columns: 1fr 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="s-header">
+  <a href="/" class="s-logo">felix hartmann</a>
+  <span class="s-counter" id="counter"></span>
+</header>
+
+<!-- PROGRESS BAR -->
+<div class="s-progress">
+  <div class="s-progress-fill" id="prog-fill"></div>
+</div>
+
+<!-- SLIDING TRACK -->
+<div class="s-outer">
+  <div class="s-track" id="track">
+
+    <!-- ── STEP 0: INTRO ──────────────────────────────────── -->
+    <div class="step step-intro" id="step-0">
+      <div class="intro-inner">
+        <p class="intro-tag">KI-Readiness Check</p>
+        <h1 class="intro-h">Wo stehst du<br>mit <em>KI</em> wirklich?</h1>
+        <p class="intro-sub">
+          Kein Pitch. Keine Verkaufsshow.<br>
+          <strong>6 Fragen, ehrliche Einschätzung.</strong> Ich frage, du antwortest – und am Ende bekommst du eine klare Analyse, wo du stehst und was als nächstes Sinn ergibt.
+        </p>
+        <div class="intro-meta">
+          <span class="intro-meta-item"><b>6</b> Schritte</span>
+          <span class="intro-meta-item"><b>~5</b> Minuten</span>
+          <span class="intro-meta-item"><b>100%</b> kostenlos</span>
+        </div>
+        <button class="btn-start" onclick="startSurvey()">Starten →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 1: KONTEXT ────────────────────────────────── -->
+    <div class="step" id="step-1">
+      <div class="step-inner">
+        <p class="step-label">// 01 · Dein Kontext</p>
+        <h2 class="step-q">Was beschreibt<br>deine Rolle am besten?</h2>
+        <p class="step-hint">Eine Auswahl – keine Mehrfachauswahl nötig.</p>
+
+        <div class="cards single" id="cards-role">
+          <div class="card" data-val="c-level" onclick="pick(this,'role')">
+            <span class="card-key">1</span>
+            <div class="card-body">
+              <div class="card-title">Geschäftsführung / C-Level</div>
+              <div class="card-sub">CEO, COO, CTO, Geschäftsführer</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="head-of" onclick="pick(this,'role')">
+            <span class="card-key">2</span>
+            <div class="card-body">
+              <div class="card-title">Abteilungsleitung / Head of</div>
+              <div class="card-sub">Führungsverantwortung mit strategischem Einfluss</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="pm" onclick="pick(this,'role')">
+            <span class="card-key">3</span>
+            <div class="card-body">
+              <div class="card-title">Projekt- / Produktmanager</div>
+              <div class="card-sub">Verantwortlich für konkrete Vorhaben</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="tech" onclick="pick(this,'role')">
+            <span class="card-key">4</span>
+            <div class="card-body">
+              <div class="card-title">Technische Führung / Entwicklung</div>
+              <div class="card-sub">Entwickler, Tech Lead, Software-Architekt</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="ops" onclick="pick(this,'role')">
+            <span class="card-key">5</span>
+            <div class="card-body">
+              <div class="card-title">Operations / Prozessverantwortung</div>
+              <div class="card-sub">Zuständig für Workflows und Abläufe</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="other" onclick="pick(this,'role')">
+            <span class="card-key">6</span>
+            <div class="card-body">
+              <div class="card-title">Freelancer / Selbstständig / Sonstiges</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+        </div>
+
+        <hr class="step-divider" id="size-divider" style="display:none">
+        <h3 class="step-q2" id="size-label" style="display:none">Wie groß ist dein Unternehmen?</h3>
+        <div class="cards duo" id="cards-size" style="display:none">
+          <div class="card" data-val="1-20" onclick="pick(this,'size')">
+            <span class="card-key">A</span>
+            <div class="card-body"><div class="card-title">1 – 20 Mitarbeiter</div></div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="21-100" onclick="pick(this,'size')">
+            <span class="card-key">B</span>
+            <div class="card-body"><div class="card-title">21 – 100 Mitarbeiter</div></div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="101-500" onclick="pick(this,'size')">
+            <span class="card-key">C</span>
+            <div class="card-body"><div class="card-title">101 – 500 Mitarbeiter</div></div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="500plus" onclick="pick(this,'size')">
+            <span class="card-key">D</span>
+            <div class="card-body"><div class="card-title">500+ Mitarbeiter</div></div>
+            <div class="card-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: KI-REIFEGRAD ───────────────────────────── -->
+    <div class="step" id="step-2">
+      <div class="step-inner">
+        <p class="step-label">// 02 · Aktueller Stand</p>
+        <h2 class="step-q">Wie würdest du euren<br>KI-Reifegrad einschätzen?</h2>
+        <p class="step-hint">Ehrlich ist besser als optimistisch.</p>
+        <div class="cards single" id="cards-maturity">
+          <div class="card" data-val="0" onclick="pick(this,'maturity')">
+            <span class="card-key">1</span>
+            <div class="card-body">
+              <div class="card-title">Wir nutzen KI kaum oder gar nicht</div>
+              <div class="card-sub">Kein System, keine klare Richtung</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="1" onclick="pick(this,'maturity')">
+            <span class="card-key">2</span>
+            <div class="card-body">
+              <div class="card-title">Einzelne Tools, aber kein System dahinter</div>
+              <div class="card-sub">ChatGPT, Copilot etc. – aber jeder macht sein Ding</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="2" onclick="pick(this,'maturity')">
+            <span class="card-key">3</span>
+            <div class="card-body">
+              <div class="card-title">Erste Automationen laufen</div>
+              <div class="card-sub">Vereinzelte Workflows, aber noch unstrukturiert</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="3" onclick="pick(this,'maturity')">
+            <span class="card-key">4</span>
+            <div class="card-body">
+              <div class="card-title">Strategie vorhanden, Umsetzung hakt</div>
+              <div class="card-sub">Richtung klar – Execution fehlt</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="4" onclick="pick(this,'maturity')">
+            <span class="card-key">5</span>
+            <div class="card-body">
+              <div class="card-title">KI läuft – wir wollen skalieren</div>
+              <div class="card-sub">Infrastruktur steht, Ausbau ist das Ziel</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: BOTTLENECK ─────────────────────────────── -->
+    <div class="step" id="step-3">
+      <div class="step-inner">
+        <p class="step-label">// 03 · Hürden</p>
+        <h2 class="step-q">Was ist aktuell<br>euer größtes Bottleneck?</h2>
+        <p class="step-hint">Was kostet euch gerade am meisten – Zeit, Geld oder Nerven?</p>
+        <div class="cards single" id="cards-bottleneck">
+          <div class="card" data-val="manual" onclick="pick(this,'bottleneck')">
+            <span class="card-key">1</span>
+            <div class="card-body">
+              <div class="card-title">Zu viele manuelle, repetitive Prozesse</div>
+              <div class="card-sub">Mitarbeiter machen Aufgaben, die eine Maschine erledigen sollte</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="clarity" onclick="pick(this,'bottleneck')">
+            <span class="card-key">2</span>
+            <div class="card-body">
+              <div class="card-title">Wir wissen nicht, wo KI Sinn ergibt</div>
+              <div class="card-sub">Fehlende Orientierung: Use Cases, Prioritäten, Reihenfolge</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="infra" onclick="pick(this,'bottleneck')">
+            <span class="card-key">3</span>
+            <div class="card-body">
+              <div class="card-title">Fehlende technische Infrastruktur</div>
+              <div class="card-sub">Kein Setup, keine Tools, keine Integrationen</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="adoption" onclick="pick(this,'bottleneck')">
+            <span class="card-key">4</span>
+            <div class="card-body">
+              <div class="card-title">Das Team nimmt KI nicht an</div>
+              <div class="card-sub">Skepsis, Überforderung oder fehlende Bereitschaft</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="data" onclick="pick(this,'bottleneck')">
+            <span class="card-key">5</span>
+            <div class="card-body">
+              <div class="card-title">Datenlage ist unklar oder unstrukturiert</div>
+              <div class="card-sub">KI braucht Daten – und unsere sind ein Chaos</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: ZIEL ───────────────────────────────────── -->
+    <div class="step" id="step-4">
+      <div class="step-inner">
+        <p class="step-label">// 04 · Ziel</p>
+        <h2 class="step-q">Was ist dein<br>primäres Ziel?</h2>
+        <p class="step-hint">Was soll sich konkret ändern?</p>
+        <div class="cards single" id="cards-goal">
+          <div class="card" data-val="automation" onclick="pick(this,'goal')">
+            <span class="card-key">1</span>
+            <div class="card-body">
+              <div class="card-title">Zeit und Kosten sparen durch Automation</div>
+              <div class="card-sub">Konkrete Workflows automatisieren, Aufwand messbar senken</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="strategy" onclick="pick(this,'goal')">
+            <span class="card-key">2</span>
+            <div class="card-body">
+              <div class="card-title">KI-Strategie aufbauen und kommunizieren</div>
+              <div class="card-sub">Klare Richtung, Roadmap, Entscheidungsgrundlage</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="enablement" onclick="pick(this,'goal')">
+            <span class="card-key">3</span>
+            <div class="card-body">
+              <div class="card-title">Team befähigen, KI selbst zu nutzen</div>
+              <div class="card-sub">Enablement, System-Prompts, nachhaltige Adoption</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="agent" onclick="pick(this,'goal')">
+            <span class="card-key">4</span>
+            <div class="card-body">
+              <div class="card-title">KI-Agenten oder -Produkt entwickeln</div>
+              <div class="card-sub">Eigenständiges System mit echtem Tool-Use und Deployment</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="infra" onclick="pick(this,'goal')">
+            <span class="card-key">5</span>
+            <div class="card-body">
+              <div class="card-title">KI-Infrastruktur aufbauen</div>
+              <div class="card-sub">Skalierbare Plattform als Grundlage für alles weitere</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 5: SCOPE & TIMELINE ───────────────────────── -->
+    <div class="step" id="step-5">
+      <div class="step-inner">
+        <p class="step-label">// 05 · Rahmen</p>
+        <h2 class="step-q">Wie stellst du dir<br>die Zusammenarbeit vor?</h2>
+        <p class="step-hint">Kein Commitment – einfach eine erste Einschätzung.</p>
+        <div class="cards" id="cards-scope">
+          <div class="card" data-val="pilot" onclick="pick(this,'scope')">
+            <span class="card-key">1</span>
+            <div class="card-body">
+              <div class="card-title">Pilot / Proof of Concept</div>
+              <div class="card-sub">Schnell testen, Machbarkeit beweisen</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="project" onclick="pick(this,'scope')">
+            <span class="card-key">2</span>
+            <div class="card-body">
+              <div class="card-title">Projektbasierte Zusammenarbeit</div>
+              <div class="card-sub">Klar definierter Scope mit Abschluss</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="partnership" onclick="pick(this,'scope')">
+            <span class="card-key">3</span>
+            <div class="card-body">
+              <div class="card-title">Strategische Partnerschaft</div>
+              <div class="card-sub">Längerfristige Begleitung, kontinuierlicher Aufbau</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="consulting" onclick="pick(this,'scope')">
+            <span class="card-key">4</span>
+            <div class="card-body">
+              <div class="card-title">Beratung / Assessment / Workshop</div>
+              <div class="card-sub">Einmalig, klare Outputs, kein laufendes Engagement</div>
+            </div>
+            <div class="card-check"></div>
+          </div>
+        </div>
+
+        <hr class="step-divider" id="timeline-divider" style="display:none">
+        <h3 class="step-q2" id="timeline-label" style="display:none">Wann soll das losgehen?</h3>
+        <div class="cards duo" id="cards-timeline" style="display:none">
+          <div class="card" data-val="now" onclick="pick(this,'timeline')">
+            <span class="card-key">A</span>
+            <div class="card-body"><div class="card-title">Sofort / in 2 Wochen</div></div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="soon" onclick="pick(this,'timeline')">
+            <span class="card-key">B</span>
+            <div class="card-body"><div class="card-title">In 2 – 3 Monaten</div></div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="later" onclick="pick(this,'timeline')">
+            <span class="card-key">C</span>
+            <div class="card-body"><div class="card-title">Zweite Jahreshälfte</div></div>
+            <div class="card-check"></div>
+          </div>
+          <div class="card" data-val="explore" onclick="pick(this,'timeline')">
+            <span class="card-key">D</span>
+            <div class="card-body"><div class="card-title">Erstmal informieren</div></div>
+            <div class="card-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 6: KONTAKT ────────────────────────────────── -->
+    <div class="step" id="step-6">
+      <div class="step-inner">
+        <p class="step-label">// 06 · Kontakt</p>
+        <h2 class="step-q">Damit ich mich<br>melden kann.</h2>
+        <p class="step-hint">Kein Newsletter, kein Spam. Nur ein echtes Gespräch, wenn es auf beiden Seiten passt.</p>
+        <div class="input-group">
+          <div class="input-wrap">
+            <label class="input-label" for="inp-name">Name</label>
+            <input class="input-field" type="text" id="inp-name" placeholder="Max Mustermann" autocomplete="name" />
+          </div>
+          <div class="input-wrap">
+            <label class="input-label" for="inp-email">E-Mail</label>
+            <input class="input-field" type="email" id="inp-email" placeholder="max@unternehmen.de" autocomplete="email" />
+          </div>
+          <div class="input-wrap">
+            <label class="input-label" for="inp-company">Unternehmen <span class="input-optional">(optional)</span></label>
+            <input class="input-field" type="text" id="inp-company" placeholder="Mustermann GmbH" autocomplete="organization" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 7: RESULT ─────────────────────────────────── -->
+    <div class="step step-result" id="step-7">
+      <div class="result-inner">
+        <p class="step-label">// Auswertung</p>
+        <h2 class="step-q" id="result-h" style="margin-bottom:1.5rem"></h2>
+
+        <div class="result-score">
+          <p class="result-score-lbl">Dein KI-Reifegrad</p>
+          <p class="result-score-title" id="r-title"></p>
+          <p class="result-score-desc"  id="r-desc"></p>
+        </div>
+
+        <div class="result-findings" id="r-findings"></div>
+
+        <div class="result-cta">
+          <h3 class="result-cta-h">Ich melde mich.</h3>
+          <p class="result-cta-sub" id="r-cta-sub">Ich schaue mir deine Antworten an und melde mich innerhalb von 24h.</p>
+          <div class="result-cta-btns">
+            <a href="https://www.linkedin.com/in/felix-htm/" target="_blank" rel="noopener" class="btn-cta primary">LinkedIn öffnen →</a>
+            <a href="/" class="btn-cta secondary">Zur Website</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /track -->
+</div><!-- /s-outer -->
+
+<!-- FOOTER NAV -->
+<footer class="s-footer" id="footer">
+  <button class="btn-back" id="btn-back">← Zurück</button>
+  <button class="btn-next" id="btn-next" disabled>Weiter →</button>
+</footer>
+
+<script>
+  // ── STATE ─────────────────────────────────────────────────────────────────
+  const S = { step: 0, a: {} };
+  const TOTAL = 6;
+
+  const track    = document.getElementById('track');
+  const progFill = document.getElementById('prog-fill');
+  const counter  = document.getElementById('counter');
+  const footer   = document.getElementById('footer');
+  const btnBack  = document.getElementById('btn-back');
+  const btnNext  = document.getElementById('btn-next');
+
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  function render() {
+    const s = S.step;
+    track.style.transform = `translateX(calc(-${s} * 100vw))`;
+
+    // Progress bar
+    const pct = s === 0 ? 0 : s >= 7 ? 100 : Math.round(((s - 1) / TOTAL) * 100);
+    progFill.style.width = pct + '%';
+
+    // Step counter
+    counter.textContent = (s >= 1 && s <= TOTAL) ? `0${s} / 0${TOTAL}` : '';
+
+    // Footer visibility
+    footer.style.display = (s === 0 || s === 7) ? 'none' : 'flex';
+
+    // Back btn
+    btnBack.disabled = s <= 1;
+
+    // Next btn
+    const label = s === TOTAL ? 'Auswertung sehen' : 'Weiter';
+    btnNext.innerHTML = `${label} →`;
+    btnNext.disabled = !canProceed();
+  }
+
+  // ── VALIDATION ────────────────────────────────────────────────────────────
+  function canProceed() {
+    const s = S.step;
+    if (s === 1) return S.a.role && S.a.size;
+    if (s === 2) return !!S.a.maturity;
+    if (s === 3) return !!S.a.bottleneck;
+    if (s === 4) return !!S.a.goal;
+    if (s === 5) return S.a.scope && S.a.timeline;
+    if (s === 6) {
+      const name  = document.getElementById('inp-name').value.trim();
+      const email = document.getElementById('inp-email').value.trim();
+      return name.length > 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    return false;
+  }
+
+  // ── NAVIGATION ────────────────────────────────────────────────────────────
+  function startSurvey() { S.step = 1; render(); }
+
+  function goNext() {
+    if (!canProceed()) return;
+    if (S.step === TOTAL) { buildResult(); S.step = 7; }
+    else S.step++;
+    render();
+    document.getElementById(`step-${S.step}`)?.scrollTo(0, 0);
+  }
+
+  function goBack() {
+    if (S.step <= 1) return;
+    S.step--;
+    render();
+  }
+
+  btnNext.addEventListener('click', goNext);
+  btnBack.addEventListener('click', goBack);
+
+  // ── CARD SELECTION ────────────────────────────────────────────────────────
+  function pick(el, key) {
+    el.closest('.cards').querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    S.a[key] = el.dataset.val;
+
+    // Cascade reveals
+    if (key === 'role') {
+      ['size-divider','size-label','cards-size'].forEach(id => document.getElementById(id).style.display = '');
+    }
+    if (key === 'scope') {
+      ['timeline-divider','timeline-label','cards-timeline'].forEach(id => document.getElementById(id).style.display = '');
+    }
+    render();
+  }
+
+  // ── INPUT VALIDATION ──────────────────────────────────────────────────────
+  document.getElementById('inp-name').addEventListener('input', render);
+  document.getElementById('inp-email').addEventListener('input', render);
+
+  // ── KEYBOARD NAV ─────────────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (S.step === 0) { if (e.key === 'Enter') startSurvey(); return; }
+    if (S.step === 7) return;
+    if (e.key === 'Enter' && canProceed()) { goNext(); return; }
+    if (e.key === 'Escape' && document.activeElement.tagName !== 'INPUT') { goBack(); return; }
+
+    // Number/letter keys for card selection
+    const stepCards = {
+      1: [['cards-role','123456'],['cards-size','ABCD']],
+      2: [['cards-maturity','12345']],
+      3: [['cards-bottleneck','12345']],
+      4: [['cards-goal','12345']],
+      5: [['cards-scope','1234'],['cards-timeline','ABCD']],
+    };
+    const mappings = stepCards[S.step];
+    if (!mappings) return;
+    for (const [gridId, keys] of mappings) {
+      const idx = keys.indexOf(e.key.toUpperCase());
+      if (idx === -1) continue;
+      const card = document.querySelectorAll(`#${gridId} .card`)[idx];
+      if (card) { card.click(); break; }
+    }
+  });
+
+  // ── RESULT BUILDER ────────────────────────────────────────────────────────
+  function buildResult() {
+    const a = S.a;
+    const name = document.getElementById('inp-name').value.trim().split(' ')[0];
+
+    document.getElementById('result-h').textContent = name
+      ? `Danke, ${name}. Hier ist deine Einschätzung.`
+      : 'Hier ist deine Einschätzung.';
+
+    // Maturity
+    const mMap = {
+      '0': { t: 'Einstieg', d: 'Du startest bei null – das ist kein Nachteil. Es bedeutet volle Gestaltungsfreiheit und keine Legacy-Last. Die wichtigste Entscheidung jetzt: nicht wild ausprobieren, sondern strukturiert beginnen und früh messbar machen.' },
+      '1': { t: 'Orientierung', d: 'Erste Tools laufen, aber noch kein System dahinter. Das ist die kritischste Phase: Hier entscheidet sich, ob aus Einzellösungen eine echte KI-Infrastruktur wird – oder ein Flickenteppich, der in 6 Monaten mehr Aufwand macht als er spart.' },
+      '2': { t: 'Aufbau', d: 'Erste Automationen laufen. Jetzt geht es darum, daraus ein skalierbares System zu machen. Robustheit, Monitoring und Fehlerhandling werden wichtiger als neue Use Cases – wer das überspringt, baut auf Sand.' },
+      '3': { t: 'Optimierung', d: 'Strategie ist da, Umsetzung hakt. Das liegt selten am fehlenden Wissen – meistens an fehlender Execution-Kompetenz oder mangelndem Buy-in. Hier braucht es jemanden, der beide Seiten des Tisches kennt.' },
+      '4': { t: 'Skalierung', d: 'Gut aufgestellt – die Frage ist jetzt nicht mehr ob, sondern wie schnell und wohin. ROI-Messung, Skalierung auf weitere Teams und neue Use Cases: Wer hier nicht priorisiert, verliert den Vorsprung wieder.' },
+    };
+    const m = mMap[a.maturity] || mMap['0'];
+    document.getElementById('r-title').textContent = m.t;
+    document.getElementById('r-desc').textContent  = m.d;
+
+    // Findings
+    const bMap = {
+      manual:   'Manuelle Prozesse sind euer größter Hebel. Das ist eine klare Chance – repetitive Workflows lassen sich oft schneller automatisieren als gedacht, wenn man strukturiert vorgeht und die richtigen Trigger identifiziert.',
+      clarity:  'Orientierung fehlt – das ist häufiger als man denkt. Ein strukturiertes Assessment bringt in kurzer Zeit Klarheit, welche 2–3 Use Cases echten ROI haben und wo KI mehr kostet als sie bringt.',
+      infra:    'Fehlende Infrastruktur ist lösbar. Der Aufbau eines KI-Backbones (n8n, Langdock o.ä.) braucht oft nur wenige Wochen – und zahlt sich sofort aus, wenn Automationen darauf aufbauen können.',
+      adoption: 'Team-Adoption ist oft unterschätzt. KI-Enablement ist kein einmaliges Training – es ist ein Change-Management-Prozess. Mit dem richtigen Ansatz geht es schneller als erwartet, wenn die Menschenseite ernst genommen wird.',
+      data:     'Daten-Chaos ist real, aber kein Stopper. Man muss nicht alles sauber haben, um zu starten. Oft reichen 20% der Daten für 80% der Use Cases – der Rest kommt mit dem Prozess.',
+    };
+    const gMap = {
+      automation:  'Dein Ziel ist klar und umsetzbar. Konkrete Zeitersparnis durch Automation lässt sich messbar machen – ROI wird schneller sichtbar als bei rein strategischen Projekten.',
+      strategy:    'Eine KI-Strategie braucht mehr als ein Slidedeck. Sie braucht jemanden, der weiß, was technisch möglich ist und was in der Praxis funktioniert – und der beides kommunizieren kann.',
+      enablement:  'Team-Enablement wirkt am längsten. Wer Teams befähigt, KI selbst anzuwenden, multipliziert den Impact – statt immer wieder selbst eingreifen zu müssen.',
+      agent:       'KI-Agenten mit echtem Tool-Use sind komplex, aber ein echter Wettbewerbsvorteil wenn sie laufen. Architektur und Deployment sind die kritischen Schritte – hier sind Erfahrung und Bedachtheit entscheidend.',
+      infra:       'Eine solide KI-Infrastruktur ist die Basis für alles andere. Wer diese Entscheidung einmal richtig trifft, spart Jahre an Nacharbeit und Refactoring.',
+    };
+    const sMap = {
+      pilot:       'Ein Pilot ist der richtige Einstieg. Schnell validieren, konkret liefern – und dann auf Basis echter Daten entscheiden, ob und wie skaliert wird.',
+      project:     'Projektbasiert bedeutet klare Erwartungen auf beiden Seiten. Das funktioniert gut, wenn Scope und Erfolgskriterien sauber definiert sind bevor es losgeht.',
+      partnership: 'Langfristige Partnerschaft macht Sinn, wenn KI kein Einmalprojekt ist – sondern dauerhaft in die Unternehmens-DNA soll. Das erfordert Vertrauen und Kontinuität.',
+      consulting:  'Ein Assessment oder Workshop bringt oft mehr Clarity als Monate interner Diskussion. Als erster Schritt vor der Umsetzung ist das häufig die produktivste Investition.',
+    };
+
+    const findings = [bMap[a.bottleneck], gMap[a.goal], sMap[a.scope]].filter(Boolean);
+    document.getElementById('r-findings').innerHTML = findings.map(f =>
+      `<div class="result-finding"><span class="result-finding-dot">▸</span><span class="result-finding-text">${f}</span></div>`
+    ).join('');
+
+    // CTA sub
+    const tlMap = {
+      now:     'Du willst sofort loslegen – ich melde mich innerhalb von 24h.',
+      soon:    'Guter Zeitpunkt für ein erstes Gespräch, bevor es konkret wird.',
+      later:   'Noch etwas Zeit – gut um es richtig vorzubereiten.',
+      explore: 'Kein Druck. Wenn das Gespräch Sinn ergibt, merken wir das beide.',
+    };
+    document.getElementById('r-cta-sub').textContent = tlMap[a.timeline] || 'Ich schaue mir deine Antworten an und melde mich.';
+  }
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  render();
+</script>
+</body>
+</html>
