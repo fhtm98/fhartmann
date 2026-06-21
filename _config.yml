@@ -1,0 +1,21 @@
+title:       Felix Hartmann
+description: "Automation Engineer & KI-Stratege. Vom Softwareingenieur zum Architekten unternehmensweiter KI-Transformation."
+url:         "https://fhartmann.com"
+baseurl:     ""
+
+# Build
+markdown: kramdown
+exclude:
+  - deploy.sh
+  - Gemfile
+  - Gemfile.lock
+  - .gitignore
+  - vendor/
+  - README.md
+
+# All pages use default layout unless overridden
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
